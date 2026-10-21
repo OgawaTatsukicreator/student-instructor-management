@@ -2,4 +2,27 @@
 /runtime/
 /output/
 /.env
+/.env.*
+!/.env.example
+
+# DB定義・エクスポート・生成した試験SQLはローカルで保管する
+/database.sql
+*.[sS][qQ][lL]
+
+# 実行時の記録、一時ファイル、配布用アーカイブ
+*.log
+*.tmp
+*.bak
+*.swp
+*~
 *.zip
+*.7z
+*.tar
+*.gz
+
+# PC固有の設定・OSが生成するファイル
+/.idea/
+/.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
