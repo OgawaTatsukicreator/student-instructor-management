@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require __DIR__ . '/../functions.php';
+require __DIR__ . '/../services.php';
 $count = 0;
 function check(bool $condition, string $label): void { global $count; if (!$condition) { throw new RuntimeException($label); } $count++; }
 foreach (['abcdefghij','ABCDEFGHIJ','1234567890','!!!!!!!!!!','Abc123456','Abc123456' . str_repeat('a',42),"Abcdefghi ","Abcdefghi\n",'Ａbcdefghij1'] as $value) {
@@ -15,4 +16,12 @@ check(return_target('//example.invalid') === 'students.php', 'scheme-relative re
 check(return_target('../login.php') === 'students.php', 'path traversal refused');
 check(return_target('student_detail.php?id=42&redirect=https://example.invalid') === 'student_detail.php?id=42', 'return parameters allowlist');
 check(text_value(['x'=>['unexpected']], 'x') === '', 'array input refused');
+check(cookie_base_path('/βteam/login.php') === '/%CE%B2team/', 'Unicode folder cookie path');
+check(cookie_base_path('/%CE%B2team/login.php') === '/%CE%B2team/', 'encoded folder is not encoded twice');
+check(cookie_base_path('/login.php') === '/', 'root cookie path');
+$person=['last_name'=>'山田','first_name'=>'学','notes'=>''];
+check(!isset(student_errors($person+['birth_date'=>'2012-02-29'])['birth_date']), 'leap day accepted');
+foreach (['2011-02-29','2099-01-01',"2010-01-01\0",'', '2010-1-1'] as $date) {
+    check(isset(student_errors($person+['birth_date'=>$date])['birth_date']), 'invalid or future birthday refused');
+}
 echo "unit: {$count} passed\n";

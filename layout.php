@@ -4,12 +4,12 @@ declare(strict_types=1);
 function page_header(string $title, string $section = '', bool $anonymous = false): void
 {
     $user = $GLOBALS['user'] ?? null;
-    ?><!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title><?=e($title)?> | βteam</title><link rel="stylesheet" href="assets/app.css"><script src="assets/app.js" defer></script></head><body>
+    ?><!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title><?=e($title)?> | βteam</title><link rel="icon" type="image/svg+xml" href="assets/favicon.svg"><link rel="stylesheet" href="assets/app.css"><script src="assets/app.js" defer></script></head><body>
     <a class="skip" href="#main">本文へ移動</a>
     <header class="app-header"><a class="brand" href="index.php"><span class="brand-mark" aria-hidden="true">β</span><span>βteam<small>学習塾 生徒・講師管理</small></span></a>
     <?php if ($user && !$anonymous): ?><div class="header-user"><span><?=e(full_name($user))?><small><?=e(role_label($user['role']))?> / <?=e($user['role'])?></small></span><a class="quiet" href="password_change.php?return=<?=e(urlencode(return_target(basename($_SERVER['SCRIPT_NAME']) . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''))))?>">パスワード変更</a><form method="post" action="logout.php"><?=csrf_input()?><button class="quiet" type="submit">ログアウト</button></form></div><?php endif; ?></header>
     <?php if ($user && !$anonymous && !(int)$user['must_change_password']): ?><nav class="tabs" aria-label="情報の切り替え"><a href="students.php" <?=$section==='students'?'aria-current="page"':''?>>生徒情報</a><?php if ($user['role'] !== 'general'): ?><a href="teachers.php" <?=$section==='teachers'?'aria-current="page"':''?>>講師情報</a><?php endif; ?></nav><?php endif; ?>
-    <main id="main" class="<?= $anonymous ? 'login-main' : 'container' ?>">
+    <main id="main" tabindex="-1" class="<?= $anonymous ? 'login-main' : 'container' ?>">
     <?php if (!empty($_SESSION['flash'])): ?><div class="notice success" role="status"><?=e($_SESSION['flash'])?></div><?php unset($_SESSION['flash']); endif;
 }
 function page_footer(): void { echo '</main><footer class="app-footer">βteam <span>生徒と講師のつながりを、一つの名簿に。</span></footer></body></html>'; }

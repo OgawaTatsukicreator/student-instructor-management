@@ -27,7 +27,7 @@ if (is_post()) {
 $title = ['create'=>'生徒登録','edit'=>'生徒情報の編集','notes'=>'特記事項の編集'][$mode];
 $path = ['create'=>'student_create.php','edit'=>'student_edit.php','notes'=>'student_notes.php'][$mode];
 page_header($title,'students');
-?><div class="form-panel"><a class="back-link" href="<?=e($return)?>">← <?=$notes_only ? '元の画面へ戻る' : '生徒一覧へ戻る'?></a><section class="panel"><div class="form-title"><span class="eyebrow">生徒情報</span><h1><?=e($title)?></h1><p class="subtle small"><?=$notes_only ? e(full_name($row)) . 'さんの特記事項を編集します。担当講師で共有されます。' : '必須項目を入力し、担当講師を1名以上選択してください。'?></p></div><?php error_summary($errors); ?>
+?><div class="form-panel"><a class="back-link" href="<?=e($return)?>">← <?=$notes_only ? '元の画面へ戻る' : '生徒一覧へ戻る'?></a><section class="panel"><div class="form-title"><span class="eyebrow">生徒情報</span><h1><?=e($title)?></h1><p class="subtle small"><?=$notes_only ? e(full_name($row)) . 'さんの特記事項を編集します。担当講師で共有されます。' : '必須項目を入力し、担当講師を1名以上選択してください。'?></p></div><p class="field-help">保存前に別の画面へ移動すると、入力内容は失われます。</p><?php error_summary($errors); ?>
 <form method="post" action="<?=e($path)?><?=$row?'?id=' . (int)$row['id']:''?>"><?=csrf_input()?><?php if ($row): ?><input type="hidden" name="version" value="<?=(int)$version?>"><?php endif; ?><input type="hidden" name="return" value="<?=e($return)?>"><div class="form-grid">
 <?php if (!$notes_only): ?>
 <label>姓<span class="required">必須</span><input name="last_name" value="<?=e($data['last_name'])?>" maxlength="50" autocomplete="off" required <?=field_attrs($errors,'last_name')?>><?=field_error($errors,'last_name')?></label>

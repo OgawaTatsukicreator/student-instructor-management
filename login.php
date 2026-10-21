@@ -26,5 +26,5 @@ if (is_post()) {
 page_header('ログイン', '', true);
 ?><section class="login-card"><div class="login-intro"><span class="eyebrow">生徒と講師をつなぐ名簿</span><h1>講師ログイン</h1><p>登録済みのアカウントでログインしてください。</p></div><?php error_summary($errors); ?><form method="post" action="login.php" class="stack"><?=csrf_input()?>
 <label>メールアドレス<input type="email" name="email" value="<?=e($email)?>" maxlength="254" autocomplete="username" required <?=field_attrs($errors,'email')?>><?=field_error($errors,'email')?></label>
-<label>パスワード<span class="password-field"><input type="password" id="login-password" name="password" autocomplete="current-password" required <?=field_attrs($errors,'password')?>><button type="button" class="show-password" data-toggle-password="login-password" aria-pressed="false">表示</button></span><?=field_error($errors,'password')?></label>
+<label>パスワード<span class="password-field"><input type="password" id="login-password" name="password" aria-label="パスワード" autocomplete="current-password" required <?=field_attrs($errors,'password')?>><button type="button" class="show-password" data-toggle-password="login-password" aria-pressed="false">表示</button></span><?=field_error($errors,'password')?></label>
 <button class="button full" type="submit">ログイン</button></form><p class="subtle small">パスワードを忘れた場合は、管理者へ連絡してください。</p></section><?php page_footer(); ?>

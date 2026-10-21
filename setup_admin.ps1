@@ -1,4 +1,5 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
 $phpPath = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..\php\php.exe'))
 if (-not (Test-Path -LiteralPath $phpPath)) { throw 'XAMPPのPHPが見つかりません。xampp\htdocs\βteamに配置してください。' }
 $adminLastName = Read-Host '管理者の姓'

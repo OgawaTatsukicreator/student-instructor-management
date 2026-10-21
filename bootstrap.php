@@ -17,8 +17,8 @@ if (PHP_SAPI !== 'cli') {
     session_name('betateam_session');
     ini_set('session.use_strict_mode', '1');
     ini_set('session.use_only_cookies', '1');
-    $cookie_path = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-    session_set_cookie_params(['lifetime'=>0,'path'=>$cookie_path === '/' ? '/' : $cookie_path . '/',
+    $cookie_path = cookie_base_path($_SERVER['SCRIPT_NAME']);
+    session_set_cookie_params(['lifetime'=>0,'path'=>$cookie_path,
         'secure'=>!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off', 'httponly'=>true, 'samesite'=>'Lax']);
     session_start();
     set_exception_handler(function (Throwable $error): void {

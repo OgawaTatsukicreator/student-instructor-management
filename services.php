@@ -29,7 +29,7 @@ function selected_teacher_ids(array &$errors): array {
 }
 function student_errors(array $data): array {
     $errors = common_fields($data, false);
-    $date = DateTimeImmutable::createFromFormat('!Y-m-d', $data['birth_date']);
+    $date = preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/D',$data['birth_date']) ? DateTimeImmutable::createFromFormat('!Y-m-d', $data['birth_date']) : false;
     if (!$date || $date->format('Y-m-d') !== $data['birth_date'] || $date > new DateTimeImmutable('today')) { $errors['birth_date'] = '生年月日は今日以前の実在する日付を入力してください。'; }
     return $errors;
 }
@@ -70,7 +70,8 @@ function teacher_data(): array {
 }
 function save_teacher(?int $id, array $data, ?int $version, ?string $initial_hash): int {
     try {
-        return transaction(function () use ($id,$data,$version,$initial_hash): int {
+        $own_credential = null;
+        $saved_id = transaction(function () use ($id,$data,$version,$initial_hash,&$own_credential): int {
             management_lock(); $actor = fresh_actor(['admin']);
             $role_id = query('SELECT id FROM roles WHERE name=?',[$data['role']])->fetchColumn();
             if (!$role_id) { throw new FormError('権限を正しく選択してください。'); }
@@ -87,10 +88,12 @@ function save_teacher(?int $id, array $data, ?int $version, ?string $initial_has
             query('UPDATE teachers SET last_name=?,first_name=?,email=?,role_id=?,notes=?,version=version+1,credential_version=credential_version+? WHERE id=?',[$data['last_name'],$data['first_name'],$data['email'],$role_id,$data['notes'],(int)$credentials_changed,$id]);
             if ($credentials_changed) {
                 query('DELETE FROM password_changes WHERE teacher_id=?',[$id]);
-                if ((int)$actor['id'] === $id) { $_SESSION['credential_version'] = (int)$row['credential_version'] + 1; }
+                if ((int)$actor['id'] === $id) { $own_credential = (int)$row['credential_version'] + 1; }
             }
             return $id;
         });
+        if ($own_credential !== null) { $_SESSION['credential_version'] = $own_credential; }
+        return $saved_id;
     } catch (PDOException $e) {
         if (($e->errorInfo[1] ?? 0) === 1062) { throw new FormError('このメールアドレスは既に登録されています。'); }
         throw $e;

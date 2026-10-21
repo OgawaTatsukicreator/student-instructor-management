@@ -20,7 +20,7 @@ if (is_post()) {
 }
 $title=$row?'講師情報の編集':'講師登録'; $self=$row&&(int)$row['id']===(int)$user['id'];
 page_header($title,'teachers');
-?><div class="form-panel"><a class="back-link" href="teachers.php">← 講師一覧へ戻る</a><section class="panel"><div class="form-title"><span class="eyebrow">講師情報</span><h1><?=e($title)?></h1><p class="subtle small">権限によって操作できる範囲が変わります。</p></div><?php error_summary($errors); ?>
+?><div class="form-panel"><a class="back-link" href="teachers.php">← 講師一覧へ戻る</a><section class="panel"><div class="form-title"><span class="eyebrow">講師情報</span><h1><?=e($title)?></h1><p class="subtle small">権限によって操作できる範囲が変わります。</p></div><p class="field-help">保存前に別の画面へ移動すると、入力内容は失われます。</p><?php error_summary($errors); ?>
 <form method="post" action="<?=$row?'teacher_edit.php?id='.(int)$row['id']:'teacher_create.php'?>"><?=csrf_input()?><?php if ($row): ?><input type="hidden" name="version" value="<?=(int)$version?>"><?php endif; ?><div class="form-grid">
 <label>姓<span class="required">必須</span><input name="last_name" value="<?=e($data['last_name'])?>" maxlength="50" autocomplete="off" required <?=field_attrs($errors,'last_name')?>><?=field_error($errors,'last_name')?></label>
 <label>名<span class="required">必須</span><input name="first_name" value="<?=e($data['first_name'])?>" maxlength="50" autocomplete="off" required <?=field_attrs($errors,'first_name')?>><?=field_error($errors,'first_name')?></label>

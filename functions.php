@@ -7,6 +7,11 @@ function e(mixed $value): string { return htmlspecialchars((string)($value ?? ''
 function text_value(array $source, string $key): string { return isset($source[$key]) && is_string($source[$key]) ? $source[$key] : ''; }
 function post_text(string $key): string { return text_value($_POST, $key); }
 function is_post(): bool { return $_SERVER['REQUEST_METHOD'] === 'POST'; }
+function cookie_base_path(string $script): string {
+    $dir = str_replace('\\','/',dirname(str_replace('\\','/',$script)));
+    if ($dir === '/' || $dir === '.') { return '/'; }
+    return implode('/',array_map('rawurlencode',explode('/',rawurldecode($dir)))) . '/';
+}
 function redirect(string $path): never { header('Location: ' . $path, true, 303); exit; }
 function flash(string $message): void { $_SESSION['flash'] = $message; }
 function full_name(array $row): string { return $row['last_name'] . ' ' . $row['first_name']; }
