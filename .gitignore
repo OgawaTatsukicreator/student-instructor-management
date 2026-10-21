@@ -1,0 +1,5 @@
+/config.local.php
+/runtime/
+/output/
+/.env
+*.zip
