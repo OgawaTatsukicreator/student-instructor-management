@@ -1,0 +1,498 @@
+{
+  "unit_assertions": 31,
+  "scenario_assertions": {
+    "core": [
+      {
+        "label": "CLI初期管理者の作成",
+        "passed": true
+      },
+      {
+        "label": "初期管理者の再作成を拒否",
+        "passed": true
+      },
+      {
+        "label": "未ログインを拒否",
+        "passed": true
+      },
+      {
+        "label": "Webからの初期管理者作成を拒否",
+        "passed": true
+      },
+      {
+        "label": "CSRF不正を拒否",
+        "passed": true
+      },
+      {
+        "label": "初回ログインをパスワード変更へ誘導",
+        "passed": true
+      },
+      {
+        "label": "セッションCookie HttpOnly",
+        "passed": true
+      },
+      {
+        "label": "初回変更前の通常画面を拒否",
+        "passed": true
+      },
+      {
+        "label": "不正な新パスワードを拒否",
+        "passed": true
+      },
+      {
+        "label": "初回変更の完了先",
+        "passed": true
+      },
+      {
+        "label": "変更後にログイン状態を維持",
+        "passed": true
+      },
+      {
+        "label": "変更状態を更新",
+        "passed": true
+      },
+      {
+        "label": "パスワードを平文保存しない",
+        "passed": true
+      },
+      {
+        "label": "GETログアウトを拒否",
+        "passed": true
+      },
+      {
+        "label": "POSTログアウト",
+        "passed": true
+      },
+      {
+        "label": "旧パスワードを拒否",
+        "passed": true
+      },
+      {
+        "label": "新パスワードでログイン",
+        "passed": true
+      }
+    ],
+    "students": [
+      {
+        "label": "adminログイン",
+        "passed": true
+      },
+      {
+        "label": "operatorログイン",
+        "passed": true
+      },
+      {
+        "label": "generalログイン",
+        "passed": true
+      },
+      {
+        "label": "複数担当で生徒登録",
+        "passed": true
+      },
+      {
+        "label": "中間テーブルに複数担当保存",
+        "passed": true
+      },
+      {
+        "label": "generalが生徒閲覧",
+        "passed": true
+      },
+      {
+        "label": "generalの生徒登録を拒否",
+        "passed": true
+      },
+      {
+        "label": "generalの基本項目編集を拒否",
+        "passed": true
+      },
+      {
+        "label": "担当generalの特記事項保存",
+        "passed": true
+      },
+      {
+        "label": "送信された基本項目を更新しない",
+        "passed": true
+      },
+      {
+        "label": "特記事項のHTMLを安全に表示",
+        "passed": true
+      },
+      {
+        "label": "担当外generalの特記事項編集を拒否",
+        "passed": true
+      },
+      {
+        "label": "古い版による上書きを拒否",
+        "passed": true
+      },
+      {
+        "label": "担当講師を変更",
+        "passed": true
+      },
+      {
+        "label": "担当解除後の保存を拒否",
+        "passed": true
+      },
+      {
+        "label": "未来日の登録を拒否",
+        "passed": true
+      },
+      {
+        "label": "担当未選択を拒否",
+        "passed": true
+      },
+      {
+        "label": "operatorが生徒登録",
+        "passed": true
+      },
+      {
+        "label": "GETの生徒削除を拒否",
+        "passed": true
+      },
+      {
+        "label": "operatorが生徒削除",
+        "passed": true
+      },
+      {
+        "label": "生徒削除時の関連解除",
+        "passed": true
+      },
+      {
+        "label": "不正なIDを拒否",
+        "passed": true
+      },
+      {
+        "label": "存在しない生徒を案内",
+        "passed": true
+      },
+      {
+        "label": "内部ファイル・SQLの取得を拒否",
+        "passed": true
+      }
+    ],
+    "teachers": [
+      {
+        "label": "adminログイン",
+        "passed": true
+      },
+      {
+        "label": "operatorの講師一覧はoperator以下のみ",
+        "passed": true
+      },
+      {
+        "label": "operatorのadmin直接閲覧を拒否",
+        "passed": true
+      },
+      {
+        "label": "operatorのgeneral詳細閲覧",
+        "passed": true
+      },
+      {
+        "label": "generalの講師一覧を拒否",
+        "passed": true
+      },
+      {
+        "label": "operatorの講師変更を拒否: teacher_create.php",
+        "passed": true
+      },
+      {
+        "label": "operatorの講師変更を拒否: teacher_edit.php?id=3",
+        "passed": true
+      },
+      {
+        "label": "operatorの講師変更を拒否: teacher_delete.php?id=3",
+        "passed": true
+      },
+      {
+        "label": "adminが講師登録",
+        "passed": true
+      },
+      {
+        "label": "初回変更フラグ設定",
+        "passed": true
+      },
+      {
+        "label": "登録講師の初回ログイン",
+        "passed": true
+      },
+      {
+        "label": "メールの重複登録を拒否",
+        "passed": true
+      },
+      {
+        "label": "初期パスワードポリシー",
+        "passed": true
+      },
+      {
+        "label": "講師情報編集",
+        "passed": true
+      },
+      {
+        "label": "講師編集の競合検出",
+        "passed": true
+      },
+      {
+        "label": "既存パスワードを画面に表示しない",
+        "passed": true
+      },
+      {
+        "label": "自分の権限変更を拒否",
+        "passed": true
+      },
+      {
+        "label": "自分・最後のadminの削除を拒否",
+        "passed": true
+      },
+      {
+        "label": "担当生徒がいる講師の削除を拒否",
+        "passed": true
+      },
+      {
+        "label": "担当がいない講師を削除",
+        "passed": true
+      },
+      {
+        "label": "講師削除を反映",
+        "passed": true
+      },
+      {
+        "label": "削除済み講師の詳細表示",
+        "passed": true
+      }
+    ],
+    "mail": [
+      {
+        "label": "メール認証試験のログイン",
+        "passed": true
+      },
+      {
+        "label": "コード送信後に認証画面へ遷移",
+        "passed": true
+      },
+      {
+        "label": "送信時点ではパスワードを変更しない",
+        "passed": true
+      },
+      {
+        "label": "平文コードをDB保存しない",
+        "passed": true
+      },
+      {
+        "label": "別セッションからのコード利用を拒否",
+        "passed": true
+      },
+      {
+        "label": "別セッションの操作で本人の認証を消さない",
+        "passed": true
+      },
+      {
+        "label": "再送間隔の制限",
+        "passed": true
+      },
+      {
+        "label": "間隔経過後に再送",
+        "passed": true
+      },
+      {
+        "label": "再送前のコードを拒否",
+        "passed": true
+      },
+      {
+        "label": "メール認証後に元の画面へ戻る",
+        "passed": true
+      },
+      {
+        "label": "ログインを維持して完了表示",
+        "passed": true
+      },
+      {
+        "label": "他のログインを失効",
+        "passed": true
+      },
+      {
+        "label": "使用済みコードを削除",
+        "passed": true
+      },
+      {
+        "label": "コード再利用を拒否",
+        "passed": true
+      },
+      {
+        "label": "誤入力試験の送信",
+        "passed": true
+      },
+      {
+        "label": "5回の誤入力で失効",
+        "passed": true
+      },
+      {
+        "label": "期限切れで変更せず破棄",
+        "passed": true
+      },
+      {
+        "label": "キャンセルで保留情報破棄",
+        "passed": true
+      },
+      {
+        "label": "時間内送信 1",
+        "passed": true
+      },
+      {
+        "label": "時間内送信 2",
+        "passed": true
+      },
+      {
+        "label": "時間内送信 3",
+        "passed": true
+      },
+      {
+        "label": "時間内送信 4",
+        "passed": true
+      },
+      {
+        "label": "時間内送信 5",
+        "passed": true
+      },
+      {
+        "label": "1時間の送信上限を拒否",
+        "passed": true
+      },
+      {
+        "label": "SMTP失敗時に変更しない",
+        "passed": true
+      },
+      {
+        "label": "送信後のメール変更で認証を無効化",
+        "passed": true
+      },
+      {
+        "label": "失敗した手続きで元のパスワードを維持",
+        "passed": true
+      }
+    ],
+    "deployment": [
+      {
+        "label": "βteamサブディレクトリでログイン",
+        "passed": true
+      },
+      {
+        "label": "CookieのパスがURLと一致",
+        "passed": true
+      },
+      {
+        "label": "βteamサブディレクトリでログイン状態を維持",
+        "passed": true
+      },
+      {
+        "label": "分離DB内のβteam名でPHP接続・権限データを確認",
+        "passed": true
+      }
+    ],
+    "regression": [
+      {
+        "label": "最終版の管理者ログイン",
+        "passed": true
+      },
+      {
+        "label": "自分のメール変更を保存",
+        "passed": true
+      },
+      {
+        "label": "メール更新のコミット後も自分のログインを維持",
+        "passed": true
+      },
+      {
+        "label": "自分のメールを復帰",
+        "passed": true
+      },
+      {
+        "label": "復帰後のログインを維持",
+        "passed": true
+      },
+      {
+        "label": "別セッションでもログイン回数制限を維持",
+        "passed": true
+      }
+    ]
+  },
+  "total_assertions": 131,
+  "crawl": {
+    "admin": {
+      "screens": 28,
+      "edges": 282,
+      "console_errors": 0,
+      "unreached": 0
+    },
+    "operator": {
+      "screens": 22,
+      "edges": 222,
+      "console_errors": 0,
+      "unreached": 0
+    },
+    "general": {
+      "screens": 16,
+      "edges": 144,
+      "console_errors": 0,
+      "unreached": 0
+    }
+  },
+  "monkey": {
+    "admin": {
+      "events": 300,
+      "seed": 42,
+      "errors": 68,
+      "types": {
+        "requestfailed: net::ERR_ABORTED": 68
+      },
+      "application_exceptions": 0,
+      "http_errors": 0
+    },
+    "general": {
+      "events": 300,
+      "seed": 73,
+      "errors": 78,
+      "types": {
+        "requestfailed: net::ERR_ABORTED": 78
+      },
+      "application_exceptions": 0,
+      "http_errors": 0
+    }
+  },
+  "apache": [
+    {
+      "Resource": "login.php",
+      "Status": 200
+    },
+    {
+      "Resource": "assets/app.css",
+      "Status": 200
+    },
+    {
+      "Resource": "assets/favicon.svg",
+      "Status": 200
+    },
+    {
+      "Resource": "database.sql",
+      "Status": 403
+    },
+    {
+      "Resource": "config.example.php",
+      "Status": 403
+    },
+    {
+      "Resource": "docs/DB%E8%A8%AD%E8%A8%88.md",
+      "Status": 403
+    },
+    {
+      "Resource": "third_party/PHPMailer/composer.json",
+      "Status": 403
+    },
+    {
+      "Resource": ".git/HEAD",
+      "Status": 403
+    },
+    {
+      "Resource": "setup_admin.php",
+      "Status": 403
+    }
+  ]
+}
