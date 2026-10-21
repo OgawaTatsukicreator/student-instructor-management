@@ -1,0 +1,155 @@
+{
+  "engine": "MariaDB 10.4.32 (XAMPP)",
+  "isolation": "専用一時datadir、127.0.0.1:33317、既存DBへ接続なし",
+  "test_database": "review_25e05416",
+  "sql_sha256": "b7e0187fbdce9396f6df5e0ca25cc9a315c09df4ce5c45c180c5b99eb41b1166",
+  "results": [
+    {
+      "case": "DB未選択では元SQLを実行できない",
+      "passed": true,
+      "exit_code": 1,
+      "output": "",
+      "error": "ERROR 1046 (3D000) at line 2: No database selected"
+    },
+    {
+      "case": "隔離サーバー内に検証用DBを作成",
+      "passed": true,
+      "exit_code": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "case": "元SQLの4テーブルを作成",
+      "passed": true,
+      "exit_code": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "case": "権限の初期データは0件",
+      "passed": true,
+      "exit_code": 0,
+      "output": "0",
+      "error": ""
+    },
+    {
+      "case": "試験データ準備",
+      "passed": true,
+      "exit_code": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "case": "担当を複数登録できる",
+      "passed": true,
+      "exit_code": 0,
+      "output": "2",
+      "error": ""
+    },
+    {
+      "case": "同一の担当関係の重複を拒否",
+      "passed": true,
+      "exit_code": 1,
+      "output": "",
+      "error": "ERROR 1062 (23000) at line 2: Duplicate entry '1-1' for key 'PRIMARY'"
+    },
+    {
+      "case": "メールの重複を拒否",
+      "passed": true,
+      "exit_code": 1,
+      "output": "",
+      "error": "ERROR 1062 (23000) at line 2: Duplicate entry 'ADMIN@example.invalid' for key 'email'"
+    },
+    {
+      "case": "存在しない講師を担当にできない",
+      "passed": true,
+      "exit_code": 1,
+      "output": "",
+      "error": "ERROR 1452 (23000) at line 2: Cannot add or update a child row: a foreign key constraint fails (`review_25e05416`.`student_teacher`, CONSTRAINT `student_teacher_ibfk_2` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE CASCADE)"
+    },
+    {
+      "case": "担当生徒がいる講師を削除できる",
+      "passed": true,
+      "exit_code": 0,
+      "output": "1\n1",
+      "error": ""
+    },
+    {
+      "case": "最後の担当を削除すると生徒は未割当になる",
+      "passed": true,
+      "exit_code": 0,
+      "output": "0\n1",
+      "error": ""
+    },
+    {
+      "case": "生徒削除で担当関係だけが消え講師は残る",
+      "passed": true,
+      "exit_code": 0,
+      "output": "0\n1",
+      "error": ""
+    },
+    {
+      "case": "生年月日はNULLを保存できる",
+      "passed": true,
+      "exit_code": 0,
+      "output": "1",
+      "error": ""
+    },
+    {
+      "case": "同名の権限を追加できる",
+      "passed": true,
+      "exit_code": 0,
+      "output": "2",
+      "error": ""
+    },
+    {
+      "case": "3種類以外の権限を追加できる",
+      "passed": true,
+      "exit_code": 0,
+      "output": "1",
+      "error": ""
+    },
+    {
+      "case": "実際のエンジンと照合順序",
+      "passed": true,
+      "exit_code": 0,
+      "output": "roles\tInnoDB\tutf8mb4_general_ci\nstudents\tInnoDB\tutf8mb4_general_ci\nstudent_teacher\tInnoDB\tutf8mb4_general_ci\nteachers\tInnoDB\tutf8mb4_general_ci",
+      "error": ""
+    },
+    {
+      "case": "多対多：講師3が複数生徒を担当",
+      "passed": true,
+      "exit_code": 0,
+      "output": "2",
+      "error": ""
+    },
+    {
+      "case": "多対多：同じ生徒が複数講師を持つ",
+      "passed": true,
+      "exit_code": 0,
+      "output": "2",
+      "error": ""
+    },
+    {
+      "case": "修正候補：講師削除のCASCADEをRESTRICTへ変更",
+      "passed": true,
+      "exit_code": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "case": "削除制限採用時：担当生徒ありの講師削除を拒否",
+      "passed": true,
+      "exit_code": 1,
+      "output": "",
+      "error": "ERROR 1451 (23000) at line 2: Cannot delete or update a parent row: a foreign key constraint fails (`review_25e05416`.`student_teacher`, CONSTRAINT `fk_student_teacher_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`))"
+    },
+    {
+      "case": "削除制限採用後も生徒削除は担当関係を消し講師を残す",
+      "passed": true,
+      "exit_code": 0,
+      "output": "0\n1\n1",
+      "error": ""
+    }
+  ]
+}
