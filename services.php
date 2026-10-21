@@ -57,3 +57,42 @@ function save_student(?int $id, array $data, array $teacher_ids, ?int $version, 
         return $id;
     });
 }
+
+function teacher_row(int $id, array $viewer): array {
+    $filter = $viewer['role'] === 'operator' ? " AND r.name IN ('operator','general')" : '';
+    $row = query('SELECT t.id,t.last_name,t.first_name,t.email,t.notes,t.role_id,t.version,r.name AS role FROM teachers t JOIN roles r ON r.id=t.role_id WHERE t.id=?' . $filter,[$id])->fetch();
+    if (!$row) { page_error(404,'指定された講師情報は見つかりません。'); }
+    return $row;
+}
+function teacher_data(): array {
+    return ['last_name'=>trim(post_text('last_name')), 'first_name'=>trim(post_text('first_name')),
+        'email'=>strtolower(trim(post_text('email'))), 'role'=>post_text('role'), 'notes'=>post_text('notes')];
+}
+function save_teacher(?int $id, array $data, ?int $version, ?string $initial_hash): int {
+    try {
+        return transaction(function () use ($id,$data,$version,$initial_hash): int {
+            management_lock(); $actor = fresh_actor(['admin']);
+            $role_id = query('SELECT id FROM roles WHERE name=?',[$data['role']])->fetchColumn();
+            if (!$role_id) { throw new FormError('権限を正しく選択してください。'); }
+            if ($id === null) {
+                query('INSERT INTO teachers (last_name,first_name,email,role_id,notes,password) VALUES (?,?,?,?,?,?)',[$data['last_name'],$data['first_name'],$data['email'],$role_id,$data['notes'],$initial_hash]);
+                return (int)db()->lastInsertId();
+            }
+            $row = query('SELECT t.*,r.name AS role FROM teachers t JOIN roles r ON r.id=t.role_id WHERE t.id=? FOR UPDATE',[$id])->fetch();
+            if (!$row) { throw new FormError('この講師情報は削除されています。'); }
+            if ((int)$row['version'] !== $version) { throw new FormError('他のユーザーが更新しました。画面を開き直してください。'); }
+            if ((int)$actor['id'] === $id && $data['role'] !== $row['role']) { throw new FormError('ご自身の権限は変更できません。'); }
+            if ($row['role'] === 'admin' && $data['role'] !== 'admin' && (int)query("SELECT COUNT(*) FROM teachers t JOIN roles r ON r.id=t.role_id WHERE r.name='admin'")->fetchColumn() <= 1) { throw new FormError('最後の管理者の権限は変更できません。'); }
+            $credentials_changed = $row['email'] !== $data['email'] || $row['role'] !== $data['role'];
+            query('UPDATE teachers SET last_name=?,first_name=?,email=?,role_id=?,notes=?,version=version+1,credential_version=credential_version+? WHERE id=?',[$data['last_name'],$data['first_name'],$data['email'],$role_id,$data['notes'],(int)$credentials_changed,$id]);
+            if ($credentials_changed) {
+                query('DELETE FROM password_changes WHERE teacher_id=?',[$id]);
+                if ((int)$actor['id'] === $id) { $_SESSION['credential_version'] = (int)$row['credential_version'] + 1; }
+            }
+            return $id;
+        });
+    } catch (PDOException $e) {
+        if (($e->errorInfo[1] ?? 0) === 1062) { throw new FormError('このメールアドレスは既に登録されています。'); }
+        throw $e;
+    }
+}
