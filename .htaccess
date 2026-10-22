@@ -1,8 +1,7 @@
 Options -Indexes
-<IfModule mod_rewrite.c>
+LimitRequestBody 65536
 RewriteEngine On
 RewriteRule ^(?:docs|tests|third_party|runtime|output|\.git)(?:/|$) - [F,L,NC]
-</IfModule>
-<FilesMatch "(?i)\.(sql|md|json|lock|log|ini|env|ps1)$|^\.env(?:\.|$)|^(config(?:\.local|\.example)?|bootstrap|db|auth|functions|layout|services|mailer|student_form|teacher_form|setup_admin)\.php$">
+<FilesMatch "(?i)^\.|(?:\.(?:sql|md|json|lock|log|ini|env|ps1|bak|old|orig|save|swp|tmp|zip|7z|tar|gz|phps)|~)$|^(config(?:\.local|\.example)?|bootstrap|errors|db|auth|functions|layout|services|mailer|student_form|teacher_form|setup_admin)\.php$">
   Require all denied
 </FilesMatch>
