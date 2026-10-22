@@ -7,14 +7,14 @@ function smtp_code(string $email, string $code): void
     require_once __DIR__ . '/third_party/PHPMailer/src/PHPMailer.php';
     require_once __DIR__ . '/third_party/PHPMailer/src/SMTP.php';
     $c = $GLOBALS['config']['smtp'];
-    if (!filter_var($email,FILTER_VALIDATE_EMAIL) || !filter_var($c['from'],FILTER_VALIDATE_EMAIL) || $c['host']==='') { throw new RuntimeException('SMTP is not configured'); }
+    if (!filter_var($email,FILTER_VALIDATE_EMAIL) || !filter_var($c['from'],FILTER_VALIDATE_EMAIL) || $c['host']==='') { throw new ServiceUnavailable('SMTP is not configured'); }
     if (!in_array($c['security'],['tls','ssl','none'],true)
         || ($c['security']==='none' && !in_array($c['host'],['127.0.0.1','localhost','::1'],true))) { throw new RuntimeException('Invalid SMTP encryption configuration'); }
     $mail = new PHPMailer\PHPMailer\PHPMailer(true);
     $mail->isSMTP(); $mail->Host=$c['host']; $mail->Port=(int)$c['port'];
     $mail->SMTPAuth=$c['username']!==''; $mail->Username=$c['username']; $mail->Password=$c['password'];
     $mail->SMTPSecure=$c['security']==='none'?'':$c['security']; $mail->SMTPAutoTLS=$c['security']!=='none';
-    $mail->Timeout=10; $mail->Timelimit=15; $mail->CharSet='UTF-8';
+    $mail->Timeout=10; $mail->getSMTPInstance()->Timelimit=15; $mail->CharSet='UTF-8';
     $mail->setFrom($c['from'],$c['from_name']); $mail->addAddress($email);
     $mail->Subject='βteam パスワード変更の認証コード';
     $mail->Body="パスワード変更の認証コードは次のとおりです。\n\n{$code}\n\n有効期限は10分です。\nこの操作に心当たりがない場合は、このメールを破棄してください。\nパスワードはメール認証が完了するまで変更されません。";
@@ -30,7 +30,7 @@ function mail_slot(int $teacher_id): void
             query('INSERT IGNORE INTO rate_limits(bucket_key,hits,window_started) VALUES (?,0,?)',[$key,$now]);
             $row=query('SELECT hits,window_started FROM rate_limits WHERE bucket_key=? FOR UPDATE',[$key])->fetch();
             if ($now-(int)$row['window_started'] >= $seconds) { query('UPDATE rate_limits SET hits=1,window_started=? WHERE bucket_key=?',[$now,$key]); }
-            elseif ((int)$row['hits'] >= $maximum) { throw new FormError($kind==='hour'?'メール送信は1時間に5回までです。時間をおいて再度お試しください。':'再送には60秒お待ちください。'); }
+            elseif ((int)$row['hits'] >= $maximum) { throw new FormError($kind==='hour'?'メール送信は1時間に5回までです。時間をおいて再度お試しください。':'再送には60秒お待ちください。',429,null,max(1,$seconds-($now-(int)$row['window_started']))); }
             else { query('UPDATE rate_limits SET hits=hits+1 WHERE bucket_key=?',[$key]); }
         }
     });
@@ -38,7 +38,7 @@ function mail_slot(int $teacher_id): void
 function code_hash(string $token, string $code): string
 {
     $key=$GLOBALS['config']['app_key'];
-    if (!is_string($key) || strlen($key)<32) { throw new FormError('メール認証の設定が完了していません。管理者へ連絡してください。'); }
+    if (!is_string($key) || strlen($key)<32) { throw new FormError('メール認証の設定が完了していません。管理者へ連絡してください。',503,null,60); }
     return hash_hmac('sha256',$token.':'.$code,$key);
 }
 function deliver_change(array $user, ?string $new_hash, ?string $current_password, ?string $previous_token=null): void
@@ -62,10 +62,11 @@ function deliver_change(array $user, ?string $new_hash, ?string $current_passwor
     });
     try { smtp_code($email,$code); }
     catch (Throwable $e) {
-        query('DELETE FROM password_changes WHERE teacher_id=? AND token=?',[$user['id'],$token]);
         unset($_SESSION['pending_password_token']);
-        error_log('βteam SMTP delivery failed ['.get_class($e).']');
-        throw new FormError('メールを送信できませんでした。パスワードは変更していません。時間をおくか、管理者へ送信設定の確認を依頼してください。');
+        diagnostic_log('smtp.delivery', $e, 503);
+        try { query('DELETE FROM password_changes WHERE teacher_id=? AND token=?',[$user['id'],$token]); }
+        catch (Throwable $cleanup) { diagnostic_log('smtp.cleanup', $cleanup, 503); }
+        throw new FormError('メールを送信できませんでした。パスワードは変更していません。時間をおくか、管理者へ送信設定の確認を依頼してください。',503,null,60);
     }
     $marked=query('UPDATE password_changes SET sent=1 WHERE teacher_id=? AND token=?',[$user['id'],$token]);
     if ($marked->rowCount()!==1) { throw new FormError('別の変更手続きが開始されました。入力からやり直してください。'); }
@@ -122,7 +123,7 @@ function password_return(array $user): string
 function finish_change(int $credential_version, string $return): never
 {
     $_SESSION['credential_version']=$credential_version;
-    session_regenerate_id(true); $_SESSION['csrf']=bin2hex(random_bytes(32)); $_SESSION['auth_nonce']=bin2hex(random_bytes(32));
+    rotate_session(); $_SESSION['csrf']=bin2hex(random_bytes(32)); $_SESSION['auth_nonce']=bin2hex(random_bytes(32));
     unset($_SESSION['pending_password_token'],$_SESSION['password_return']);
     flash('パスワードを変更しました。'); redirect($return);
 }

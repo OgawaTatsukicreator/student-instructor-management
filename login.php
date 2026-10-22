@@ -9,9 +9,10 @@ if (is_post()) {
     if (post_text('password') === '' || strlen(post_text('password')) > 1024) { $errors['password'] = 'パスワードを入力してください。'; }
     if (!$errors) {
         $email = strtolower($email);
-        $by_ip = consume_limit('login-ip:' . ($_SERVER['REMOTE_ADDR'] ?? ''), 30, 900);
-        $by_account = consume_limit('login-account:' . $email, 5, 900);
-        if (!$by_ip || !$by_account) { $errors['login'] = 'ログイン試行が上限に達しました。15分ほどおいてから再度お試しください。'; }
+        $ip_retry = $account_retry = 0;
+        $by_ip = consume_limit('login-ip:' . ($_SERVER['REMOTE_ADDR'] ?? ''), 30, 900, $ip_retry);
+        $by_account = consume_limit('login-account:' . $email, 5, 900, $account_retry);
+        if (!$by_ip || !$by_account) { apply_form_error(new FormError('ログイン試行が上限に達しました。時間をおいて再度お試しください。',429,null,max($ip_retry,$account_retry,1)), $errors, 'login'); }
         else {
             $row = query('SELECT t.*,r.name AS role FROM teachers t JOIN roles r ON r.id=t.role_id WHERE t.email=?', [$email])->fetch();
             $valid = password_verify(post_text('password'), $row['password'] ?? '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.');

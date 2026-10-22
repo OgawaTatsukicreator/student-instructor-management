@@ -13,4 +13,4 @@ try {
         query('DELETE FROM students WHERE id=?',[$id]);
     });
     flash('生徒を削除しました。'); redirect('students.php');
-} catch (FormError $e) { page_error(409,$e->getMessage()); }
+} catch (FormError $e) { page_error($e->status,$e->getMessage()); }

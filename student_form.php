@@ -14,14 +14,18 @@ $return = $notes_only ? return_target(is_post() ? post_text('return') : (text_va
 $errors = [];
 if (is_post()) {
     csrf_check();
-    if ($notes_only) { $data['notes'] = post_text('notes'); $errors = mb_strlen($data['notes']) > 2000 ? ['notes'=>'特記事項は2,000文字以内で入力してください。'] : []; }
+    if ($notes_only) {
+        $data['notes'] = post_text('notes');
+        $errors = mb_strlen($data['notes']) > 2000 ? ['notes'=>'特記事項は2,000文字以内で入力してください。'] : [];
+        if (!$errors && !valid_text($data['notes'],2000,true)) { $errors['notes']='特記事項に使用できない文字があります。入力し直してください。'; }
+    }
     else { $data = student_data(); $errors = student_errors($data); $selected = selected_teacher_ids($errors); }
-    try { if ($row) { $version = version_value(); } } catch (FormError $e) { $errors['save'] = $e->getMessage(); }
+    try { if ($row) { $version = version_value(); } } catch (FormError $e) { apply_form_error($e, $errors); }
     if (!$errors) {
         try {
             save_student($row ? (int)$row['id'] : null,$data,$selected,$row ? $version : null,$notes_only);
             flash($mode === 'create' ? '生徒を登録しました。' : ($notes_only ? '特記事項を保存しました。' : '生徒情報を保存しました。')); redirect($return);
-        } catch (FormError $e) { $errors['save'] = $e->getMessage(); }
+        } catch (FormError $e) { apply_form_error($e, $errors); }
     }
 }
 $title = ['create'=>'生徒登録','edit'=>'生徒情報の編集','notes'=>'特記事項の編集'][$mode];

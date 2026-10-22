@@ -10,12 +10,12 @@ if (is_post()) {
     csrf_check(); $data=teacher_data(); $errors=common_fields($data,true);
     if (!in_array($data['role'],['admin','operator','general'],true)) { $errors['role']='権限を正しく選択してください。'; }
     if (!$row && ($message=password_error(post_text('initial_password')))) { $errors['initial_password']=$message; }
-    try { if ($row) { $version=version_value(); } } catch (FormError $e) { $errors['save']=$e->getMessage(); }
+    try { if ($row) { $version=version_value(); } } catch (FormError $e) { apply_form_error($e, $errors); }
     if (!$errors) {
         try {
             save_teacher($row?(int)$row['id']:null,$data,$row?$version:null,$row?null:password_hash(post_text('initial_password'),PASSWORD_DEFAULT));
             flash($row?'講師情報を保存しました。':'講師を登録しました。初期パスワードを本人へ伝えてください。'); redirect('teachers.php');
-        } catch (FormError $e) { $errors['save']=$e->getMessage(); }
+        } catch (FormError $e) { apply_form_error($e, $errors); }
     }
 }
 $title=$row?'講師情報の編集':'講師登録'; $self=$row&&(int)$row['id']===(int)$user['id'];

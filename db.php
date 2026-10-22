@@ -27,7 +27,13 @@ function transaction(callable $work): mixed
     $pdo = db();
     $pdo->beginTransaction();
     try { $result = $work($pdo); $pdo->commit(); return $result; }
-    catch (Throwable $e) { if ($pdo->inTransaction()) { $pdo->rollBack(); } throw $e; }
+    catch (Throwable $e) {
+        if ($pdo->inTransaction()) {
+            try { $pdo->rollBack(); }
+            catch (Throwable $cleanup) { diagnostic_log('transaction.rollback', $cleanup, 503); }
+        }
+        throw $e;
+    }
 }
 
 function management_lock(): void

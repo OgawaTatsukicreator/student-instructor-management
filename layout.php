@@ -15,10 +15,7 @@ function page_header(string $title, string $section = '', bool $anonymous = fals
 function page_footer(): void { echo '</main><footer class="app-footer">βteam <span>生徒と講師のつながりを、一つの名簿に。</span></footer></body></html>'; }
 function page_error(int $status, string $message): never
 {
-    http_response_code($status);
-    page_header('操作を完了できません');
-    echo '<section class="panel error-page"><span class="eyebrow">' . $status . '</span><h1>操作を完了できません</h1><p>' . e($message) . '</p><a class="button" href="index.php">基本画面へ戻る</a></section>';
-    page_footer(); exit;
+    error_page($status, $message);
 }
 function page_heading(string $title, string $description, ?string $create = null): void
 {

@@ -22,7 +22,7 @@ if (is_post()) {
         else {
             unset($_SESSION['pending_password_token']); flash($result['state']==='locked'?'認証コードを5回間違えたため、手続きを終了しました。入力からやり直してください。':'認証手続きが無効になりました。入力からやり直してください。'); redirect('password_change.php');
         }
-    } catch (FormError $e) { $errors['mail']=$e->getMessage(); }
+    } catch (FormError $e) { apply_form_error($e, $errors, 'mail'); }
 }
 $email=explode('@',$row['email'],2); $masked=substr($email[0],0,1).'***@'.($email[1]??'');
 page_header('メール認証');

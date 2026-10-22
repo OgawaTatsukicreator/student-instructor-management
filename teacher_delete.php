@@ -16,4 +16,4 @@ try {
         query('DELETE FROM teachers WHERE id=?',[$id]);
     });
     flash('講師を削除しました。'); redirect('teachers.php');
-} catch (FormError $e) { page_error(409,$e->getMessage()); }
+} catch (FormError $e) { page_error($e->status,$e->getMessage()); }

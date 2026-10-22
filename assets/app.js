@@ -1,4 +1,5 @@
 'use strict';
+document.querySelector('.notice.error[tabindex="-1"]')?.focus();
 document.querySelectorAll('[data-toggle-password]').forEach(button => {
   button.addEventListener('click', () => {
     const field = document.getElementById(button.dataset.togglePassword);

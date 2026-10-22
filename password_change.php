@@ -8,7 +8,15 @@ $errors = [];
 if (is_post()) {
     csrf_check();
     $next = post_text('new_password');
-    if (strlen(post_text('current_password')) > 1024 || !password_verify(post_text('current_password'), $user['password'])) { $errors['current_password'] = '現在のパスワードが正しくありません。'; }
+    $retry_after = 0;
+    $check_key = 'password-check:' . (int)$user['id'];
+    if (!consume_limit($check_key, 5, 900, $retry_after)) {
+        apply_form_error(new FormError('現在のパスワードの確認が上限に達しました。時間をおいて再度お試しください。',429,null,$retry_after), $errors);
+    } elseif (strlen(post_text('current_password')) > 1024 || !password_verify(post_text('current_password'), $user['password'])) {
+        $errors['current_password'] = '現在のパスワードが正しくありません。';
+    } else {
+        query('DELETE FROM rate_limits WHERE bucket_key=?', [hash('sha256',$check_key)]);
+    }
     if ($error = password_error($next)) { $errors['new_password'] = $error; }
     if (!hash_equals($next, post_text('confirm_password'))) { $errors['confirm_password'] = '新しいパスワードと確認用の入力が一致しません。'; }
     if (!$errors && password_verify($next, $user['password'])) { $errors['new_password'] = '現在と異なるパスワードを指定してください。'; }
@@ -26,7 +34,7 @@ if (is_post()) {
                 query('DELETE FROM password_changes WHERE teacher_id=?', [$user['id']]);
             });
             finish_change((int)$user['credential_version']+1,$return);
-        } catch (FormError $e) { $errors['save'] = $e->getMessage(); }
+        } catch (FormError $e) { apply_form_error($e, $errors); }
     }
 }
 page_header('パスワード変更');

@@ -30,7 +30,7 @@ function selected_teacher_ids(array &$errors): array {
 function student_errors(array $data): array {
     $errors = common_fields($data, false);
     $date = preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/D',$data['birth_date']) ? DateTimeImmutable::createFromFormat('!Y-m-d', $data['birth_date']) : false;
-    if (!$date || $date->format('Y-m-d') !== $data['birth_date'] || $date > new DateTimeImmutable('today')) { $errors['birth_date'] = '生年月日は今日以前の実在する日付を入力してください。'; }
+    if (!$date || $date->format('Y-m-d') !== $data['birth_date'] || $date->format('Y') < '1000' || $date > new DateTimeImmutable('today')) { $errors['birth_date'] = '生年月日は1000年以降、今日以前の実在する日付を入力してください。'; }
     return $errors;
 }
 function save_student(?int $id, array $data, array $teacher_ids, ?int $version, bool $notes_only = false): int {
@@ -39,8 +39,8 @@ function save_student(?int $id, array $data, array $teacher_ids, ?int $version, 
         $actor = fresh_actor($notes_only ? ['admin','operator','general'] : ['admin','operator']);
         if ($id !== null) {
             $row = query('SELECT * FROM students WHERE id=? FOR UPDATE', [$id])->fetch();
-            if (!$row) { throw new FormError('この生徒情報は削除されています。一覧へ戻ってください。'); }
-            if ($notes_only && $actor['role'] === 'general' && !assigned_to($id,(int)$actor['id'])) { throw new FormError('担当が変更されたため、この生徒の特記事項は編集できません。'); }
+            if (!$row) { throw new FormError('この生徒情報は削除されています。一覧へ戻ってください。', 404); }
+            if ($notes_only && $actor['role'] === 'general' && !assigned_to($id,(int)$actor['id'])) { throw new FormError('担当が変更されたため、この生徒の特記事項は編集できません。', 403); }
             if ((int)$row['version'] !== $version) { throw new FormError('他のユーザーが更新しました。画面を開き直して内容を確認してください。'); }
         }
         if ($notes_only) { query('UPDATE students SET notes=?,version=version+1 WHERE id=?', [$data['notes'],$id]); return $id; }
@@ -80,7 +80,7 @@ function save_teacher(?int $id, array $data, ?int $version, ?string $initial_has
                 return (int)db()->lastInsertId();
             }
             $row = query('SELECT t.*,r.name AS role FROM teachers t JOIN roles r ON r.id=t.role_id WHERE t.id=? FOR UPDATE',[$id])->fetch();
-            if (!$row) { throw new FormError('この講師情報は削除されています。'); }
+            if (!$row) { throw new FormError('この講師情報は削除されています。', 404); }
             if ((int)$row['version'] !== $version) { throw new FormError('他のユーザーが更新しました。画面を開き直してください。'); }
             if ((int)$actor['id'] === $id && $data['role'] !== $row['role']) { throw new FormError('ご自身の権限は変更できません。'); }
             if ($row['role'] === 'admin' && $data['role'] !== 'admin' && (int)query("SELECT COUNT(*) FROM teachers t JOIN roles r ON r.id=t.role_id WHERE r.name='admin'")->fetchColumn() <= 1) { throw new FormError('最後の管理者の権限は変更できません。'); }
@@ -95,7 +95,7 @@ function save_teacher(?int $id, array $data, ?int $version, ?string $initial_has
         if ($own_credential !== null) { $_SESSION['credential_version'] = $own_credential; }
         return $saved_id;
     } catch (PDOException $e) {
-        if (($e->errorInfo[1] ?? 0) === 1062) { throw new FormError('このメールアドレスは既に登録されています。'); }
+        if ((int)($e->errorInfo[1] ?? 0) === 1062) { throw new FormError('このメールアドレスは既に登録されています。', 422, 'email'); }
         throw $e;
     }
 }
