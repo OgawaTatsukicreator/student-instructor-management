@@ -19,6 +19,8 @@
 *.7z
 *.tar
 *.gz
+__pycache__/
+*.py[cod]
 
 # PC固有の設定・OSが生成するファイル
 /.idea/

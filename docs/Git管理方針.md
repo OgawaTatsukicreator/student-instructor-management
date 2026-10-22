@@ -10,6 +10,7 @@
 | config.local.php、.env、.env.* | 各自の接続先・パスワード・SMTP認証情報。値のない.env.exampleは除外しない |
 | runtime/、output/ | 実行時データ、SQLテストのJSONレポートなど |
 | .log、.tmp、.bak、.swp、末尾~ | ログ・一時ファイル・バックアップ |
+| __pycache__/、.pyc等 | セキュリティ試験用Pythonのコンパイル済みキャッシュ |
 | .zip、.7z、.tar、.gz | 提出・配布用アーカイブ。DBエクスポートを含む可能性があるためローカル保管 |
 | .idea/、.vscode/、.DS_Store、Thumbs.db、Desktop.ini | PCごとのエディター設定・OS生成ファイル |
 

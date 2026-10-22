@@ -89,6 +89,9 @@ class Database:
                         "--host=" + names["HOST"], "--port=" + names["PORT"], "--user=" + names["USER"],
                         "--database=" + names["DATABASE"], "--default-character-set=utf8mb4", "--batch", "--raw", "--skip-column-names", "--unbuffered"]
         self.environment = os.environ.copy()
+        self.database_name = names['DATABASE']
+        self.database_host = names['HOST']
+        self.database_port = names['PORT']
         self.environment["MYSQL_PWD"] = os.environ.get("BETATEAM_SQL_TEST_PASSWORD", "")
         self.columns = {}
         rows = self.sql("SELECT TABLE_NAME,COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() ORDER BY TABLE_NAME,ORDINAL_POSITION")
@@ -411,6 +414,14 @@ class Suite:
         self.case("current-password failures are rate limited across five attempts", current_password_limit)
 
 
+def verify_server_binding(base: str, db: Database):
+    probe = Client(base).request('login.php')
+    if (probe[0] != 200 or probe[1].get('X-BetaTeam-Test-Database') != db.database_name
+            or probe[1].get('X-BetaTeam-Test-Host') != db.database_host
+            or probe[1].get('X-BetaTeam-Test-Port') != db.database_port):
+        raise TestFailure('HTTP server is not bound to the configured dedicated test database; use tests/security_router.php')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", default=os.environ.get("BETATEAM_SECURITY_BASE_URL"), help="Required: HTTP(S) URL with literal host 127.0.0.1")
@@ -428,6 +439,7 @@ def main():
             raise TestFailure("The test HTTP port is invalid")
         base = args.base_url.rstrip("/") + "/"
         db = Database()
+        verify_server_binding(base, db)
         initial = db.snapshot()
         db.fixture_guard(initial)
         suite = Suite(base, db)
