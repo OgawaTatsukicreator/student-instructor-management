@@ -8,9 +8,12 @@ function text_value(array $source, string $key): string { return isset($source[$
 function post_text(string $key): string { return text_value($_POST, $key); }
 function is_post(): bool { return $_SERVER['REQUEST_METHOD'] === 'POST'; }
 function cookie_base_path(string $script): string {
-    $dir = str_replace('\\','/',dirname(str_replace('\\','/',$script)));
+    $path = explode('?', $script, 2)[0];
+    $dir = str_replace('\\','/',dirname(str_replace('\\','/',$path)));
     if ($dir === '/' || $dir === '.') { return '/'; }
-    return implode('/',array_map('rawurlencode',explode('/',rawurldecode($dir)))) . '/';
+    // CookieのPath比較は大文字小文字を区別するため、既存の%xxの表記を保持する。
+    return implode('/', array_map(static fn(string $part): string =>
+        preg_replace('/%25([0-9a-fA-F]{2})/', '%$1', rawurlencode($part)), explode('/', $dir))) . '/';
 }
 function redirect(string $path): never { header('Location: ' . $path, true, 303); exit; }
 function flash(string $message): void { $_SESSION['flash'] = $message; }
@@ -38,7 +41,7 @@ function csrf_input(): string { return '<input type="hidden" name="csrf" value="
 function csrf_check(): void
 {
     if (!is_post() || !hash_equals(csrf_token(), post_text('csrf'))) {
-        page_error(419, '操作の有効期限が切れました。画面を開き直して、もう一度操作してください。');
+        page_error(403, '操作の有効期限が切れました。画面を開き直して、もう一度操作してください。');
     }
 }
 

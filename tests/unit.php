@@ -18,6 +18,11 @@ check(return_target('student_detail.php?id=42&redirect=https://example.invalid')
 check(text_value(['x'=>['unexpected']], 'x') === '', 'array input refused');
 check(cookie_base_path('/βteam/login.php') === '/%CE%B2team/', 'Unicode folder cookie path');
 check(cookie_base_path('/%CE%B2team/login.php') === '/%CE%B2team/', 'encoded folder is not encoded twice');
+check(cookie_base_path('/%ce%b2team/login.php') === '/%ce%b2team/', 'lowercase URL escapes match browser cookie paths');
+check(cookie_base_path('/%cE%b2team/login.php') === '/%cE%b2team/', 'mixed-case URL escapes are preserved');
+check(cookie_base_path('/%ce%b2team/login.php?next=/other/page') === '/%ce%b2team/', 'query does not change cookie directory');
+check(cookie_base_path('/space%20folder/login.php') === '/space%20folder/', 'escaped spaces are not encoded twice');
+check(cookie_base_path('/percent%25folder/login.php') === '/percent%25folder/', 'literal percent folder keeps its escape');
 check(cookie_base_path('/login.php') === '/', 'root cookie path');
 $person=['last_name'=>'山田','first_name'=>'学','notes'=>''];
 check(!isset(student_errors($person+['birth_date'=>'2012-02-29'])['birth_date']), 'leap day accepted');
