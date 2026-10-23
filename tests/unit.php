@@ -15,6 +15,10 @@ check(return_target('https://example.invalid') === 'students.php', 'external ret
 check(return_target('//example.invalid') === 'students.php', 'scheme-relative return refused');
 check(return_target('../login.php') === 'students.php', 'path traversal refused');
 check(return_target('student_detail.php?id=42&redirect=https://example.invalid') === 'student_detail.php?id=42', 'return parameters allowlist');
+check(return_target('students.php?page=2&q=%E5%B1%B1%E7%94%B0') === 'students.php?page=2&q=%E5%B1%B1%E7%94%B0', 'search preserved in list return');
+check(return_target('teachers.php?q%5B%5D=value') === 'teachers.php', 'array search refused in return');
+check(return_target('students.php?q=%00secret') === 'students.php', 'control characters refused in return');
+check(return_target('student_detail.php?id=42&q=secret') === 'student_detail.php?id=42', 'search only allowed for lists');
 check(text_value(['x'=>['unexpected']], 'x') === '', 'array input refused');
 check(cookie_base_path('/βteam/login.php') === '/%CE%B2team/', 'Unicode folder cookie path');
 check(cookie_base_path('/%CE%B2team/login.php') === '/%CE%B2team/', 'encoded folder is not encoded twice');

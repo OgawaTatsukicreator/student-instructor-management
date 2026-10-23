@@ -108,6 +108,7 @@ function return_target(string $candidate): string
     foreach (['id','page'] as $key) {
         if (isset($params[$key]) && is_string($params[$key]) && preg_match('/^[1-9][0-9]{0,8}$/D', $params[$key])) { $safe[$key] = $params[$key]; }
     }
+    if (in_array($path, ['students.php','teachers.php'], true) && isset($params['q']) && is_string($params['q']) && valid_text($params['q'],100,false)) { $safe['q'] = $params['q']; }
     return $path . ($safe ? '?' . http_build_query($safe) : '');
 }
 
