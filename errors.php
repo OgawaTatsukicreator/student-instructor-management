@@ -72,7 +72,7 @@ function error_page(int $status, string $message, ?string $reference = null, boo
     }
     $escape = static fn(string $text): string => htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     [$return, $label] = error_destination($form);
-    echo '<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>操作を完了できません | βteam</title><link rel="stylesheet" href="assets/app.css"></head><body><main class="container"><section class="panel error-page"><span class="eyebrow">' . $status . '</span><h1>操作を完了できません</h1><p>' . $escape($message) . '</p>';
+    echo '<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>操作を完了できません | 学習塾の生徒・講師管理</title><link rel="icon" href="data:,"><link rel="stylesheet" href="assets/app.css"></head><body class="anonymous"><header class="app-header"><a class="brand" href="index.php">学習塾の生徒・講師管理</a></header><main class="container"><section class="panel error-page"><span class="eyebrow">' . $status . '</span><h1>操作を完了できません</h1><p>' . $escape($message) . '</p>';
     if ($reference !== null) { echo '<p class="subtle small">問い合わせID：' . $escape($reference) . '</p>'; }
     echo '<a class="button" href="' . $escape($return) . '">' . $escape($label) . '</a></section></main></body></html>';
     exit;
