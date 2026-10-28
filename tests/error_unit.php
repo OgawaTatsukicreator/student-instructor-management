@@ -21,7 +21,7 @@ foreach (['0999-12-31','0001-01-01','0000-00-00'] as $date) {
 test_error(failure_status(new RuntimeException('secret')) === 500, 'unexpected failure is 500');
 test_error(failure_status(new ConfigurationError('secret')) === 500, 'configuration failure is 500');
 test_error(failure_status(new ServiceUnavailable('secret')) === 503, 'service failure is 503');
-foreach ([2002=>503,2006=>503,1205=>503,1213=>503,1146=>500,1045=>500,1064=>500] as $code=>$status) {
+foreach ([2002=>503,2006=>503,1205=>503,1213=>503,1969=>503,3024=>503,1146=>500,1045=>500,1064=>500] as $code=>$status) {
     $error = new PDOException('private SQL'); $error->errorInfo = ['HY000',$code,'private SQL'];
     test_error(failure_status($error) === $status, 'PDO error classification');
 }

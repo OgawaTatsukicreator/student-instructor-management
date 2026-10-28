@@ -44,7 +44,7 @@ function failure_status(Throwable $error): int
 {
     if ($error instanceof FormError) { return $error->status; }
     if ($error instanceof ServiceUnavailable) { return 503; }
-    if ($error instanceof PDOException && in_array((int)($error->errorInfo[1] ?? 0), [1040,1042,1205,1213,2002,2003,2006,2013], true)) { return 503; }
+    if ($error instanceof PDOException && in_array((int)($error->errorInfo[1] ?? 0), [1040,1042,1205,1213,1969,2002,2003,2006,2013,3024], true)) { return 503; }
     return 500;
 }
 function error_destination(bool $form = false): array

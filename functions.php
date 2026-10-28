@@ -126,3 +126,11 @@ function consume_limit(string $key, int $maximum, int $seconds, ?int &$retry_aft
         query('UPDATE rate_limits SET hits=hits+1 WHERE bucket_key=?', [$bucket]); return true;
     });
 }
+
+function enforce_search_limit(array $user): void
+{
+    $retry = 0;
+    if (!consume_limit('search-user:' . (int)$user['id'],30,60,$retry)) {
+        throw new FormError('検索の実行回数が上限に達しました。しばらく待ってから一覧を開き直してください。',429,null,$retry);
+    }
+}

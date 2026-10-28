@@ -6,6 +6,7 @@ $search = text_value($_GET,'q');
 if ((isset($_GET['q']) && !is_string($_GET['q'])) || !valid_text($search,100,false)) { page_error(400,'検索語は100文字以内で入力してください。'); }
 $search = trim($search); $params = [];
 if ($search !== '') {
+    enforce_search_limit($user);
     $filter .= ($filter === '' ? ' WHERE ' : ' AND ') . "LOCATE(?,CONCAT_WS(' ',t.last_name,t.first_name,CONCAT(t.last_name,t.first_name),t.email))>0";
     $params = [$search];
 }

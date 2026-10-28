@@ -11,7 +11,8 @@ if (is_post()) {
         $email = strtolower($email);
         $ip_retry = $account_retry = 0;
         $by_ip = consume_limit('login-ip:' . ($_SERVER['REMOTE_ADDR'] ?? ''), 30, 900, $ip_retry);
-        $by_account = consume_limit('login-account:' . $email, 5, 900, $account_retry);
+        // IP上限を超えた入力から、新しいメール別レコードを作らない。
+        $by_account = $by_ip && consume_limit('login-account:' . $email, 5, 900, $account_retry);
         if (!$by_ip || !$by_account) { apply_form_error(new FormError('ログイン試行が上限に達しました。時間をおいて再度お試しください。',429,null,max($ip_retry,$account_retry,1)), $errors, 'login'); }
         else {
             $row = query('SELECT t.*,r.name AS role FROM teachers t JOIN roles r ON r.id=t.role_id WHERE t.email=?', [$email])->fetch();

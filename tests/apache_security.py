@@ -94,7 +94,7 @@ def create_probe(temporary: Path, server_root: Path, htaccess: Path, port: int):
         "config.local.php", "config.local.php.bak", "config.php.old", "config.example.php", "config.php",
         "DB.sql", "dump.SQL", ".env.local", ".gitignore", "archive.zip", "backup.tar.gz", "server.log",
         "errors.php", "bootstrap.php", "db.php", "auth.php", "functions.php", "layout.php", "services.php",
-        "mailer.php", "student_form.php", "teacher_form.php", "setup_admin.php", "setup_admin.ps1",
+        "mailer.php", "student_form.php", "teacher_form.php", "setup_admin.php", "setup_admin.ps1", "maintenance.php",
         "spec.md", "data.json", "config.ini", "dependency.lock", "source.phps", "swap.swp", "draft.tmp", "backup~",
     )
     for name in blocked_files:

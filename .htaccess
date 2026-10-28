@@ -2,6 +2,6 @@ Options -Indexes
 LimitRequestBody 65536
 RewriteEngine On
 RewriteRule ^(?:docs|tests|third_party|runtime|output|\.git)(?:/|$) - [F,L,NC]
-<FilesMatch "(?i)^\.|(?:\.(?:sql|md|json|lock|log|ini|env|ps1|bak|old|orig|save|swp|tmp|zip|7z|tar|gz|phps)|~)$|^(config(?:\.local|\.example)?|bootstrap|errors|db|auth|functions|layout|services|mailer|student_form|teacher_form|setup_admin)\.php$">
+<FilesMatch "(?i)^\.|(?:\.(?:sql|md|json|lock|log|ini|env|ps1|bak|old|orig|save|swp|tmp|zip|7z|tar|gz|phps)|~)$|^(config(?:\.local|\.example)?|bootstrap|errors|db|auth|functions|layout|services|mailer|student_form|teacher_form|setup_admin|maintenance)\.php$">
   Require all denied
 </FilesMatch>

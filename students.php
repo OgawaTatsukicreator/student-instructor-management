@@ -6,6 +6,7 @@ if ((isset($_GET['q']) && !is_string($_GET['q'])) || !valid_text($search,100,fal
 $search = trim($search);
 $filter = ''; $params = [];
 if ($search !== '') {
+    enforce_search_limit($user);
     $filter = " WHERE (LOCATE(?,CONCAT_WS(' ',s.last_name,s.first_name,CONCAT(s.last_name,s.first_name)))>0 OR EXISTS (SELECT 1 FROM student_teacher st JOIN teachers t ON t.id=st.teacher_id WHERE st.student_id=s.id AND LOCATE(?,CONCAT_WS(' ',t.last_name,t.first_name,CONCAT(t.last_name,t.first_name)))>0))";
     $params = [$search,$search];
 }
