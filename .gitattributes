@@ -1,0 +1,2 @@
+# Preserve upstream bytes so official dependency checksums survive Windows checkout.
+third_party/PHPMailer/** -text
